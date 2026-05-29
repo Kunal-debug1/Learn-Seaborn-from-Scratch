@@ -209,7 +209,7 @@ git push origin feature-name
 **Kunal Gaikwad**
 
 * GitHub: [Kunal-Debug1 GitHub Profile](https://github.com/Kunal-Debug1?utm_source=chatgpt.com)
-* LinkedIn: Add your LinkedIn profile here
+
 
 ---
 
