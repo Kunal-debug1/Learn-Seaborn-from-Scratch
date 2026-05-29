@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seaborn Docs — Statistical Data Visualization</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e2a;
+    --border: #252a38;
+    --accent: #4f9cf9;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #fb923c;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0a0c10;
+    --sidebar-w: 270px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── LAYOUT ── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .logo {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .logo-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+  }
+  .logo-sub {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .version-badge {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 8px;
+  }
+
+  .search-wrap {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 12px 8px 34px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 10px center;
+  }
+  .search-input:focus { border-color: var(--accent); }
+
+  nav { padding: 10px 0 20px; }
+
+  .nav-section {
+    padding: 12px 16px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px 7px 20px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 13.5px;
+    border-left: 2px solid transparent;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .nav-link:hover { color: var(--text); background: var(--surface2); }
+  .nav-link.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: rgba(79,156,249,0.08);
+  }
+  .nav-link .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--muted);
+  }
+  .nav-link.active .dot { background: var(--accent); }
+  .nav-link .tag {
+    margin-left: auto;
+    font-size: 9px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent3);
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: rgba(13,15,20,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+  }
+  .breadcrumb {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .breadcrumb span { color: var(--text); }
+  .topbar-actions { display: flex; gap: 10px; }
+  .btn-sm {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-accent { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-accent:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+  /* CONTENT */
+  .content { max-width: 860px; margin: 0 auto; padding: 48px 40px 80px; }
+
+  /* SECTIONS */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 20px 0 48px;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse at center, rgba(79,156,249,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(79,156,249,0.1);
+    border: 1px solid rgba(79,156,249,0.25);
+    color: var(--accent);
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 17px;
+    color: #94a3b8;
+    max-width: 580px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+  .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    padding: 11px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .btn-primary:hover { background: #3b82f6; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    padding: 11px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* FEATURE CARDS */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 40px 0;
+  }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .feature-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .feature-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  .feature-card h3 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .feature-card p { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+  /* HEADING STYLES */
+  h2.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h2.section-title .num {
+    font-size: 13px;
+    background: var(--accent);
+    color: #fff;
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+  .section-lead { color: #94a3b8; font-size: 15px; margin-bottom: 32px; }
+
+  h3.sub-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 32px 0 10px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h3.sub-title::before {
+    content: '';
+    display: block;
+    width: 3px; height: 18px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  p { margin-bottom: 14px; color: #cbd5e1; }
+
+  /* CODE BLOCKS */
+  .code-block {
+    position: relative;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 16px 0 24px;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .code-lang::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--accent3);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .copy-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--accent3); border-color: var(--accent3); }
+  .copy-btn.copied { color: var(--accent3); border-color: var(--accent3); }
+  pre {
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.65;
+  }
+  pre::-webkit-scrollbar { height: 4px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* SYNTAX HIGHLIGHTING */
+  .kw { color: #c084fc; }
+  .fn { color: #60a5fa; }
+  .st { color: #34d399; }
+  .cm { color: #475569; font-style: italic; }
+  .num { color: #fb923c; }
+  .im { color: #f59e0b; }
+  .var { color: #e2e8f0; }
+  .op { color: #94a3b8; }
+
+  /* CALLOUT BOXES */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout.info { background: rgba(79,156,249,0.1); border: 1px solid rgba(79,156,249,0.25); }
+  .callout.tip { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); }
+  .callout.warn { background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.25); }
+  .callout p { margin: 0; color: var(--text); }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface); }
+  th {
+    padding: 10px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+  code.inline {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 1px 7px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  /* PLOT PREVIEW (SVG based) */
+  .plot-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0 24px;
+    text-align: center;
+  }
+  .plot-preview svg { max-width: 100%; }
+  .plot-label { font-size: 12px; color: var(--muted); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+
+  /* STEP LIST */
+  .steps { counter-reset: step; margin: 16px 0 24px; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 30px; height: 30px;
+    background: rgba(79,156,249,0.15);
+    border: 1px solid rgba(79,156,249,0.3);
+    color: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .step-body h4 { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .step-body p { font-size: 13.5px; margin: 0; }
+
+  /* CHEAT SHEET GRID */
+  .cheat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 24px; }
+  .cheat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .cheat-card-head {
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cheat-card-head .dot2 {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .cheat-card pre { padding: 12px 14px; font-size: 12px; }
+
+  /* PROGRESS BAR */
+  .progress-track { background: var(--surface2); border-radius: 10px; height: 4px; margin: 20px 0 32px; }
+  .progress-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.4s; }
+
+  /* INTERACTIVE PLOT DEMO */
+  .demo-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0 28px;
+  }
+  .demo-controls {
+    padding: 14px 20px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .demo-controls label { font-size: 12px; color: var(--muted); }
+  .demo-select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    outline: none;
+    cursor: pointer;
+  }
+  .demo-canvas { padding: 20px; }
+  canvas#demoChart { display: block; margin: 0 auto; }
+
+  /* PALETTE SWATCHES */
+  .palette-row { display: flex; gap: 6px; margin: 8px 0 4px; flex-wrap: wrap; }
+  .swatch {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    position: relative;
+  }
+  .swatch:hover { transform: scale(1.2); z-index: 1; }
+  .palette-name { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); }
+  .palette-block { margin-bottom: 18px; }
+
+  /* QUIZ */
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin: 16px 0;
+  }
+  .quiz-q { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text);
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .quiz-opt:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-opt.correct { border-color: var(--accent3); background: rgba(52,211,153,0.1); color: var(--accent3); }
+  .quiz-opt.wrong { border-color: #f87171; background: rgba(248,113,113,0.1); color: #f87171; }
+  .quiz-feedback { margin-top: 12px; font-size: 13px; display: none; }
+  .quiz-feedback.show { display: block; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 32px;
+  }
+  .toc-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 10px; }
+  .toc ol { padding-left: 16px; }
+  .toc li { margin-bottom: 4px; }
+  .toc a { color: #94a3b8; font-size: 13px; text-decoration: none; transition: color 0.15s; }
+  .toc a:hover { color: var(--accent); }
+
+  /* MOBILE TOGGLE */
+  .hamburger {
+    display: none;
+    position: fixed;
+    top: 14px; left: 14px;
+    z-index: 200;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .sidebar-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 90;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); transition: transform 0.25s; }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.show { display: block; }
+    .main { margin-left: 0; }
+    .hamburger { display: flex; }
+    .content { padding: 20px 18px 60px; }
+    .topbar { padding: 10px 16px 10px 56px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 34px; }
+    .cheat-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<button class="hamburger" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <span class="logo-title">seaborn</span>
+      <div class="logo-sub">Statistical Data Visualization</div>
+      <span class="version-badge">v0.13.2</span>
+    </div>
+    <div class="search-wrap">
+      <input class="search-input" type="text" placeholder="Search docs..." id="searchInput" oninput="filterNav(this.value)">
+    </div>
+    <nav id="mainNav">
+      <div class="nav-section">Get Started</div>
+      <a class="nav-link active" onclick="showSection('intro')"><span class="dot"></span> Introduction <span class="tag">Start</span></a>
+      <a class="nav-link" onclick="showSection('install')"><span class="dot"></span> Installation</a>
+      <a class="nav-link" onclick="showSection('quickstart')"><span class="dot"></span> Quick Start</a>
+
+      <div class="nav-section">Core Concepts</div>
+      <a class="nav-link" onclick="showSection('datasets')"><span class="dot"></span> Built-in Datasets</a>
+      <a class="nav-link" onclick="showSection('themes')"><span class="dot"></span> Themes & Styles</a>
+      <a class="nav-link" onclick="showSection('palettes')"><span class="dot"></span> Color Palettes</a>
+
+      <div class="nav-section">Plot Types</div>
+      <a class="nav-link" onclick="showSection('relational')"><span class="dot"></span> Relational Plots</a>
+      <a class="nav-link" onclick="showSection('distribution')"><span class="dot"></span> Distribution Plots</a>
+      <a class="nav-link" onclick="showSection('categorical')"><span class="dot"></span> Categorical Plots</a>
+      <a class="nav-link" onclick="showSection('regression')"><span class="dot"></span> Regression Plots</a>
+      <a class="nav-link" onclick="showSection('matrix')"><span class="dot"></span> Matrix Plots</a>
+
+      <div class="nav-section">Advanced</div>
+      <a class="nav-link" onclick="showSection('grids')"><span class="dot"></span> Multi-Plot Grids</a>
+      <a class="nav-link" onclick="showSection('customization')"><span class="dot"></span> Customization</a>
+      <a class="nav-link" onclick="showSection('objects')"><span class="dot"></span> Objects Interface <span class="tag">New</span></a>
+
+      <div class="nav-section">Reference</div>
+      <a class="nav-link" onclick="showSection('cheatsheet')"><span class="dot"></span> Cheat Sheet</a>
+      <a class="nav-link" onclick="showSection('quiz')"><span class="dot"></span> Practice Quiz</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="breadcrumb" id="breadcrumb">Docs <span>/</span> <span>Introduction</span></div>
+      <div class="topbar-actions">
+        <a href="https://seaborn.pydata.org" target="_blank" class="btn-sm">Official Docs ↗</a>
+        <a href="https://github.com/mwaskom/seaborn" target="_blank" class="btn-sm btn-accent">GitHub</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══════════════════════════════ INTRO ═══ -->
+      <section class="section active" id="s-intro">
+        <div class="hero">
+          <div class="hero-eyebrow">📊 Python Visualization Library</div>
+          <h1>Make beautiful<br><span class="grad">statistical charts</span><br>with ease</h1>
+          <p>Seaborn is built on top of Matplotlib and integrates deeply with pandas DataFrames — making complex statistical graphics simple and elegant.</p>
+          <div class="hero-btns">
+            <a href="#" class="btn-primary" onclick="showSection('install'); return false;">Get Started →</a>
+            <a href="#" class="btn-outline" onclick="showSection('cheatsheet'); return false;">Cheat Sheet</a>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon" style="background:rgba(79,156,249,0.15)">🎨</div>
+            <h3>Beautiful by default</h3>
+            <p>Comes with carefully crafted default themes that make statistical plots look professional with zero effort.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:rgba(167,139,250,0.15)">🐼</div>
+            <h3>Pandas-native</h3>
+            <p>Pass a DataFrame directly. Seaborn understands column names, automatically labels axes, and handles grouping.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:rgba(52,211,153,0.15)">📈</div>
+            <h3>Statistical built-in</h3>
+            <p>Bootstrap confidence intervals, kernel density estimates, regression fits — built right into the plotting functions.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:rgba(251,146,60,0.15)">⚡</div>
+            <h3>One-line plots</h3>
+            <p>Complex visualizations like pair plots, heatmaps, and facet grids require just a single function call.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:rgba(79,156,249,0.15)">🔧</div>
+            <h3>Matplotlib compatible</h3>
+            <p>Every seaborn figure is a Matplotlib object — use plt functions for fine-tuned control whenever needed.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" style="background:rgba(167,139,250,0.15)">🎲</div>
+            <h3>Built-in datasets</h3>
+            <p>Load classic datasets instantly with <code class="inline">sns.load_dataset()</code> for practice and experimentation.</p>
+          </div>
+        </div>
+
+        <div class="callout info">
+          <span class="callout-icon">💡</span>
+          <p><strong>New to Python visualization?</strong> Seaborn is the best starting point — it hides Matplotlib's complexity while still giving you full access when you need it. Start with the <a href="#" onclick="showSection('quickstart')" style="color:var(--accent)">Quick Start</a> section.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ INSTALL ═══ -->
+      <section class="section" id="s-install">
+        <h2 class="section-title"><span class="num">1</span> Installation</h2>
+        <p class="section-lead">Get seaborn installed in under a minute.</p>
+
+        <div class="toc">
+          <div class="toc-title">On this page</div>
+          <ol>
+            <li><a href="#">Using pip</a></li>
+            <li><a href="#">Using conda</a></li>
+            <li><a href="#">Verify installation</a></li>
+            <li><a href="#">Dependencies</a></li>
+          </ol>
+        </div>
+
+        <h3 class="sub-title">Install with pip</h3>
+        <p>The easiest way to install seaborn is using pip, Python's package manager:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">terminal</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="op">$</span> <span class="fn">pip</span> install seaborn</pre>
+        </div>
+
+        <h3 class="sub-title">Install with conda</h3>
+        <p>If you use Anaconda or Miniconda:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">terminal</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="op">$</span> <span class="fn">conda</span> install seaborn</pre>
+        </div>
+
+        <h3 class="sub-title">Verify your installation</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">import</span> <span class="im">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+<span class="fn">print</span>(sns.<span class="var">__version__</span>)  <span class="cm"># Should print: 0.13.2</span></pre>
+        </div>
+
+        <h3 class="sub-title">Dependencies</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Package</th><th>Minimum Version</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code class="inline">numpy</code></td><td>1.20</td><td>Numerical arrays & computations</td></tr>
+              <tr><td><code class="inline">pandas</code></td><td>1.2</td><td>DataFrames (core data format)</td></tr>
+              <tr><td><code class="inline">matplotlib</code></td><td>3.3</td><td>Underlying plot engine</td></tr>
+              <tr><td><code class="inline">scipy</code></td><td>1.6</td><td>Statistical calculations</td></tr>
+              <tr><td><code class="inline">statsmodels</code></td><td>0.12</td><td>Regression & statistical models (optional)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">✅</span>
+          <p>If you install Anaconda, ALL dependencies above come pre-installed. For Jupyter notebooks, run <code class="inline">!pip install seaborn</code> in a cell.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ QUICKSTART ═══ -->
+      <section class="section" id="s-quickstart">
+        <h2 class="section-title"><span class="num">2</span> Quick Start</h2>
+        <p class="section-lead">Go from zero to your first plot in 5 minutes.</p>
+
+        <h3 class="sub-title">The standard imports</h3>
+        <p>Every seaborn script starts with these lines:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">import</span> <span class="im">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>          <span class="cm"># seaborn aliased as sns</span>
+<span class="kw">import</span> <span class="im">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>  <span class="cm"># matplotlib for showing/saving</span>
+<span class="kw">import</span> <span class="im">pandas</span> <span class="kw">as</span> <span class="var">pd</span>             <span class="cm"># for DataFrames</span>
+<span class="kw">import</span> <span class="im">numpy</span> <span class="kw">as</span> <span class="var">np</span>              <span class="cm"># for numeric data</span></pre>
+        </div>
+
+        <h3 class="sub-title">Your first plot in 3 lines</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">tips</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"tips"</span>)       <span class="cm"># 1. Load sample data</span>
+sns.<span class="fn">scatterplot</span>(data<span class="op">=</span><span class="var">tips</span>, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>)  <span class="cm"># 2. Plot</span>
+plt.<span class="fn">show</span>()                                     <span class="cm"># 3. Display</span></pre>
+        </div>
+
+        <div class="plot-preview">
+          <svg viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg" width="500" height="280">
+            <rect width="500" height="280" fill="#0a0c10" rx="8"/>
+            <!-- Axes -->
+            <line x1="60" y1="240" x2="460" y2="240" stroke="#252a38" stroke-width="1.5"/>
+            <line x1="60" y1="30" x2="60" y2="240" stroke="#252a38" stroke-width="1.5"/>
+            <!-- Grid -->
+            <line x1="60" y1="195" x2="460" y2="195" stroke="#1a1e2a" stroke-width="1"/>
+            <line x1="60" y1="150" x2="460" y2="150" stroke="#1a1e2a" stroke-width="1"/>
+            <line x1="60" y1="105" x2="460" y2="105" stroke="#1a1e2a" stroke-width="1"/>
+            <line x1="60" y1="60" x2="460" y2="60" stroke="#1a1e2a" stroke-width="1"/>
+            <!-- Dots -->
+            <circle cx="120" cy="200" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="145" cy="185" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="170" cy="175" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="190" cy="160" r="4" fill="#a78bfa" opacity="0.8"/>
+            <circle cx="210" cy="170" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="230" cy="145" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="250" cy="155" r="4" fill="#a78bfa" opacity="0.8"/>
+            <circle cx="270" cy="130" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="290" cy="140" r="4" fill="#34d399" opacity="0.8"/>
+            <circle cx="310" cy="125" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="330" cy="115" r="4" fill="#a78bfa" opacity="0.8"/>
+            <circle cx="350" cy="105" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="370" cy="100" r="4" fill="#34d399" opacity="0.8"/>
+            <circle cx="390" cy="90" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="410" cy="85" r="4" fill="#a78bfa" opacity="0.8"/>
+            <circle cx="155" cy="210" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="200" cy="190" r="4" fill="#34d399" opacity="0.8"/>
+            <circle cx="240" cy="168" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="280" cy="150" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="320" cy="138" r="4" fill="#a78bfa" opacity="0.8"/>
+            <circle cx="360" cy="118" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <circle cx="400" cy="100" r="4" fill="#34d399" opacity="0.8"/>
+            <circle cx="430" cy="88" r="4" fill="#4f9cf9" opacity="0.8"/>
+            <!-- Axis Labels -->
+            <text x="260" y="268" fill="#64748b" font-size="11" text-anchor="middle" font-family="JetBrains Mono">total_bill</text>
+            <text x="20" y="140" fill="#64748b" font-size="11" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90,20,140)">tip</text>
+            <!-- Tick Labels -->
+            <text x="60" y="255" fill="#475569" font-size="9" text-anchor="middle" font-family="JetBrains Mono">5</text>
+            <text x="160" y="255" fill="#475569" font-size="9" text-anchor="middle" font-family="JetBrains Mono">15</text>
+            <text x="260" y="255" fill="#475569" font-size="9" text-anchor="middle" font-family="JetBrains Mono">25</text>
+            <text x="360" y="255" fill="#475569" font-size="9" text-anchor="middle" font-family="JetBrains Mono">35</text>
+            <text x="460" y="255" fill="#475569" font-size="9" text-anchor="middle" font-family="JetBrains Mono">45</text>
+          </svg>
+          <div class="plot-label">sns.scatterplot(data=tips, x="total_bill", y="tip")</div>
+        </div>
+
+        <h3 class="sub-title">The workflow pattern</h3>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Load or create data</h4><p>Use <code class="inline">sns.load_dataset()</code> for built-in datasets, or bring your own pandas DataFrame.</p></div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Choose a plot function</h4><p>Pick from scatter, line, bar, hist, box, violin, heatmap, and more.</p></div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Map columns to aesthetics</h4><p>Use <code class="inline">x=</code>, <code class="inline">y=</code>, <code class="inline">hue=</code>, <code class="inline">size=</code>, <code class="inline">style=</code> to encode data visually.</p></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Display or save</h4><p>Call <code class="inline">plt.show()</code> to display or <code class="inline">plt.savefig("plot.png")</code> to save.</p></div></div>
+        </div>
+
+        <h3 class="sub-title">Adding hue — grouping by color</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">tips</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"tips"</span>)
+
+sns.<span class="fn">scatterplot</span>(
+    data<span class="op">=</span><span class="var">tips</span>,
+    x<span class="op">=</span><span class="st">"total_bill"</span>,
+    y<span class="op">=</span><span class="st">"tip"</span>,
+    hue<span class="op">=</span><span class="st">"time"</span>,    <span class="cm"># Color by "Lunch" or "Dinner"</span>
+    size<span class="op">=</span><span class="st">"size"</span>,   <span class="cm"># Dot size = party size</span>
+    style<span class="op">=</span><span class="st">"sex"</span>    <span class="cm"># Marker shape by gender</span>
+)
+plt.<span class="fn">title</span>(<span class="st">"Tips Dataset"</span>)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ DATASETS ═══ -->
+      <section class="section" id="s-datasets">
+        <h2 class="section-title"><span class="num">3</span> Built-in Datasets</h2>
+        <p class="section-lead">Seaborn ships with classic datasets for practice and demos.</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># List all available datasets</span>
+<span class="fn">print</span>(sns.<span class="fn">get_dataset_names</span>())
+
+<span class="cm"># Load a dataset as a pandas DataFrame</span>
+<span class="var">df</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"tips"</span>)
+<span class="fn">print</span>(<span class="var">df</span>.<span class="fn">head</span>())</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dataset</th><th>Load name</th><th>Rows</th><th>Best for</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Tips</strong></td><td><code class="inline">"tips"</code></td><td>244</td><td>Scatter, regression, categorical</td></tr>
+              <tr><td><strong>Iris</strong></td><td><code class="inline">"iris"</code></td><td>150</td><td>Classification, pairplot, scatter</td></tr>
+              <tr><td><strong>Titanic</strong></td><td><code class="inline">"titanic"</code></td><td>891</td><td>Bar, count, categorical</td></tr>
+              <tr><td><strong>Penguins</strong></td><td><code class="inline">"penguins"</code></td><td>344</td><td>Scatter, pairplot, violin</td></tr>
+              <tr><td><strong>Flights</strong></td><td><code class="inline">"flights"</code></td><td>144</td><td>Heatmap, line, time series</td></tr>
+              <tr><td><strong>Diamonds</strong></td><td><code class="inline">"diamonds"</code></td><td>53940</td><td>Distribution, scatter, large data</td></tr>
+              <tr><td><strong>Mpg</strong></td><td><code class="inline">"mpg"</code></td><td>398</td><td>Regression, scatter, distribution</td></tr>
+              <tr><td><strong>Planets</strong></td><td><code class="inline">"planets"</code></td><td>1035</td><td>Log scale, distributions</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">🔍</span>
+          <p>Each loaded dataset is a standard pandas DataFrame. Use <code class="inline">df.info()</code>, <code class="inline">df.describe()</code>, and <code class="inline">df.columns</code> to explore it before plotting.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ THEMES ═══ -->
+      <section class="section" id="s-themes">
+        <h2 class="section-title"><span class="num">4</span> Themes & Styles</h2>
+        <p class="section-lead">Control the look and feel of every plot globally.</p>
+
+        <h3 class="sub-title">Setting a theme</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Set a theme for all subsequent plots</span>
+sns.<span class="fn">set_theme</span>()                     <span class="cm"># default seaborn theme</span>
+sns.<span class="fn">set_theme</span>(style<span class="op">=</span><span class="st">"darkgrid"</span>)    <span class="cm"># dark background + grid</span>
+sns.<span class="fn">set_theme</span>(style<span class="op">=</span><span class="st">"whitegrid"</span>)   <span class="cm"># white bg + grid</span>
+sns.<span class="fn">set_theme</span>(style<span class="op">=</span><span class="st">"dark"</span>)        <span class="cm"># dark, no grid</span>
+sns.<span class="fn">set_theme</span>(style<span class="op">=</span><span class="st">"white"</span>)       <span class="cm"># white, no grid</span>
+sns.<span class="fn">set_theme</span>(style<span class="op">=</span><span class="st">"ticks"</span>)       <span class="cm"># white + axis ticks</span></pre>
+        </div>
+
+        <h3 class="sub-title">Controlling context (scale)</h3>
+        <p>The <code class="inline">context</code> parameter adjusts font size and line widths for different output destinations:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre>sns.<span class="fn">set_context</span>(<span class="st">"paper"</span>)    <span class="cm"># smallest — for papers/journals</span>
+sns.<span class="fn">set_context</span>(<span class="st">"notebook"</span>)  <span class="cm"># default — for Jupyter notebooks</span>
+sns.<span class="fn">set_context</span>(<span class="st">"talk"</span>)     <span class="cm"># larger — for presentations</span>
+sns.<span class="fn">set_context</span>(<span class="st">"poster"</span>)   <span class="cm"># largest — for posters</span>
+
+<span class="cm"># Fine control with font_scale</span>
+sns.<span class="fn">set_context</span>(<span class="st">"notebook"</span>, font_scale<span class="op">=</span><span class="num">1.5</span>)</pre>
+        </div>
+
+        <h3 class="sub-title">Temporarily changing style</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Only affects plots inside the with block</span>
+<span class="kw">with</span> sns.<span class="fn">axes_style</span>(<span class="st">"whitegrid"</span>):
+    sns.<span class="fn">histplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>)
+    plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Style</th><th>Background</th><th>Grid</th><th>Best for</th></tr></thead>
+            <tbody>
+              <tr><td><code class="inline">darkgrid</code></td><td>Dark gray</td><td>✅</td><td>Continuous data, lines</td></tr>
+              <tr><td><code class="inline">whitegrid</code></td><td>White</td><td>✅</td><td>Categorical, bars</td></tr>
+              <tr><td><code class="inline">dark</code></td><td>Dark gray</td><td>❌</td><td>Scatter, minimal</td></tr>
+              <tr><td><code class="inline">white</code></td><td>White</td><td>❌</td><td>Publication, clean</td></tr>
+              <tr><td><code class="inline">ticks</code></td><td>White</td><td>Ticks only</td><td>Classic scientific</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ PALETTES ═══ -->
+      <section class="section" id="s-palettes">
+        <h2 class="section-title"><span class="num">5</span> Color Palettes</h2>
+        <p class="section-lead">Color is one of the most powerful visual encodings — seaborn makes it beautiful by default.</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Set palette globally</span>
+sns.<span class="fn">set_palette</span>(<span class="st">"deep"</span>)
+
+<span class="cm"># Use palette in a single plot</span>
+sns.<span class="fn">barplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>, palette<span class="op">=</span><span class="st">"viridis"</span>)
+
+<span class="cm"># View a palette</span>
+sns.<span class="fn">palplot</span>(sns.<span class="fn">color_palette</span>(<span class="st">"Set2"</span>))
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">Qualitative palettes (categorical data)</h3>
+
+        <div class="palette-block">
+          <div class="palette-name">deep</div>
+          <div class="palette-row">
+            <div class="swatch" style="background:#4c72b0" title="#4c72b0"></div>
+            <div class="swatch" style="background:#dd8452" title="#dd8452"></div>
+            <div class="swatch" style="background:#55a868" title="#55a868"></div>
+            <div class="swatch" style="background:#c44e52" title="#c44e52"></div>
+            <div class="swatch" style="background:#8172b3" title="#8172b3"></div>
+            <div class="swatch" style="background:#937860" title="#937860"></div>
+          </div>
+        </div>
+        <div class="palette-block">
+          <div class="palette-name">pastel</div>
+          <div class="palette-row">
+            <div class="swatch" style="background:#a8c4e0" title="#a8c4e0"></div>
+            <div class="swatch" style="background:#f3c6a3" title="#f3c6a3"></div>
+            <div class="swatch" style="background:#a3cdb0" title="#a3cdb0"></div>
+            <div class="swatch" style="background:#e5a3a5" title="#e5a3a5"></div>
+            <div class="swatch" style="background:#c4badc" title="#c4badc"></div>
+            <div class="swatch" style="background:#d2c0ae" title="#d2c0ae"></div>
+          </div>
+        </div>
+        <div class="palette-block">
+          <div class="palette-name">Set2</div>
+          <div class="palette-row">
+            <div class="swatch" style="background:#66c2a5"></div>
+            <div class="swatch" style="background:#fc8d62"></div>
+            <div class="swatch" style="background:#8da0cb"></div>
+            <div class="swatch" style="background:#e78ac3"></div>
+            <div class="swatch" style="background:#a6d854"></div>
+            <div class="swatch" style="background:#ffd92f"></div>
+          </div>
+        </div>
+
+        <h3 class="sub-title">Sequential palettes (ordered data)</h3>
+        <div class="palette-block">
+          <div class="palette-name">Blues</div>
+          <div class="palette-row">
+            <div class="swatch" style="background:#deebf7"></div>
+            <div class="swatch" style="background:#c6dbef"></div>
+            <div class="swatch" style="background:#9ecae1"></div>
+            <div class="swatch" style="background:#6baed6"></div>
+            <div class="swatch" style="background:#4292c6"></div>
+            <div class="swatch" style="background:#2171b5"></div>
+            <div class="swatch" style="background:#084594"></div>
+          </div>
+        </div>
+        <div class="palette-block">
+          <div class="palette-name">viridis</div>
+          <div class="palette-row">
+            <div class="swatch" style="background:#440154"></div>
+            <div class="swatch" style="background:#31688e"></div>
+            <div class="swatch" style="background:#35b779"></div>
+            <div class="swatch" style="background:#fde725"></div>
+          </div>
+        </div>
+
+        <h3 class="sub-title">Diverging palettes (bipolar data)</h3>
+        <div class="palette-block">
+          <div class="palette-name">RdBu (good for correlations)</div>
+          <div class="palette-row">
+            <div class="swatch" style="background:#b2182b"></div>
+            <div class="swatch" style="background:#ef8a62"></div>
+            <div class="swatch" style="background:#fddbc7"></div>
+            <div class="swatch" style="background:#f7f7f7"></div>
+            <div class="swatch" style="background:#d1e5f0"></div>
+            <div class="swatch" style="background:#4393c3"></div>
+            <div class="swatch" style="background:#2166ac"></div>
+          </div>
+        </div>
+
+        <div class="callout info">
+          <span class="callout-icon">🎨</span>
+          <p>Rule of thumb: use <strong>qualitative</strong> for categories, <strong>sequential</strong> for amounts, and <strong>diverging</strong> for values that go positive and negative around a center.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ RELATIONAL ═══ -->
+      <section class="section" id="s-relational">
+        <h2 class="section-title"><span class="num">6</span> Relational Plots</h2>
+        <p class="section-lead">Show relationships between two or more numeric variables.</p>
+
+        <h3 class="sub-title">scatterplot()</h3>
+        <p>The most common relational plot. Each point represents one observation.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">tips</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"tips"</span>)
+
+<span class="cm"># Basic scatter</span>
+sns.<span class="fn">scatterplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>)
+
+<span class="cm"># With grouping</span>
+sns.<span class="fn">scatterplot</span>(
+    data<span class="op">=</span>tips,
+    x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    hue<span class="op">=</span><span class="st">"smoker"</span>,   <span class="cm"># color by group</span>
+    style<span class="op">=</span><span class="st">"time"</span>,   <span class="cm"># marker shape</span>
+    size<span class="op">=</span><span class="st">"size"</span>,    <span class="cm"># point size</span>
+    alpha<span class="op">=</span><span class="num">0.7</span>       <span class="cm"># transparency</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">lineplot()</h3>
+        <p>Connects points in order of the x variable. Perfect for time series. Automatically draws confidence intervals.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">flights</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"flights"</span>)
+
+<span class="cm"># Line plot with confidence interval (aggregates by year)</span>
+sns.<span class="fn">lineplot</span>(data<span class="op">=</span>flights, x<span class="op">=</span><span class="st">"year"</span>, y<span class="op">=</span><span class="st">"passengers"</span>)
+
+<span class="cm"># Split into multiple lines by month</span>
+sns.<span class="fn">lineplot</span>(
+    data<span class="op">=</span>flights,
+    x<span class="op">=</span><span class="st">"year"</span>, y<span class="op">=</span><span class="st">"passengers"</span>,
+    hue<span class="op">=</span><span class="st">"month"</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">relplot() — figure-level interface</h3>
+        <p><code class="inline">relplot()</code> wraps both scatter and line plots into a figure-level interface with automatic facetting:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Creates subplots automatically using col=</span>
+sns.<span class="fn">relplot</span>(
+    data<span class="op">=</span>tips,
+    x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    col<span class="op">=</span><span class="st">"time"</span>,      <span class="cm"># one column per "time" value</span>
+    hue<span class="op">=</span><span class="st">"smoker"</span>,
+    kind<span class="op">=</span><span class="st">"scatter"</span>  <span class="cm"># or "line"</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ DISTRIBUTION ═══ -->
+      <section class="section" id="s-distribution">
+        <h2 class="section-title"><span class="num">7</span> Distribution Plots</h2>
+        <p class="section-lead">Visualize how data is spread — essential for EDA (exploratory data analysis).</p>
+
+        <h3 class="sub-title">histplot()</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Basic histogram</span>
+sns.<span class="fn">histplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>)
+
+<span class="cm"># Histogram + KDE curve (density overlay)</span>
+sns.<span class="fn">histplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>, kde<span class="op">=</span><span class="kw">True</span>)
+
+<span class="cm"># Grouped histograms</span>
+sns.<span class="fn">histplot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>,
+    hue<span class="op">=</span><span class="st">"sex"</span>,
+    bins<span class="op">=</span><span class="num">20</span>,          <span class="cm"># number of bins</span>
+    multiple<span class="op">=</span><span class="st">"stack"</span>  <span class="cm"># "layer", "dodge", "fill", "stack"</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">kdeplot() — Kernel Density Estimate</h3>
+        <p>Smooth probability density curve. More informative than a histogram for continuous data.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># 1D KDE</span>
+sns.<span class="fn">kdeplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>)
+
+<span class="cm"># 2D KDE (bivariate)</span>
+sns.<span class="fn">kdeplot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    fill<span class="op">=</span><span class="kw">True</span>,     <span class="cm"># fill contours</span>
+    thresh<span class="op">=</span><span class="num">0.05</span>,  <span class="cm"># cut off lowest density</span>
+    levels<span class="op">=</span><span class="num">10</span>     <span class="cm"># number of contour levels</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">ecdfplot() — Cumulative Distribution</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre>sns.<span class="fn">ecdfplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>, hue<span class="op">=</span><span class="st">"sex"</span>)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">displot() — figure-level wrapper</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Faceted histograms</span>
+sns.<span class="fn">displot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>,
+    col<span class="op">=</span><span class="st">"time"</span>,
+    kind<span class="op">=</span><span class="st">"kde"</span>  <span class="cm"># "hist", "kde", "ecdf"</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ CATEGORICAL ═══ -->
+      <section class="section" id="s-categorical">
+        <h2 class="section-title"><span class="num">8</span> Categorical Plots</h2>
+        <p class="section-lead">Show distributions or comparisons across categorical groups.</p>
+
+        <h3 class="sub-title">barplot()</h3>
+        <p>Shows mean (or another estimator) with a confidence interval bar.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Average tip per day</span>
+sns.<span class="fn">barplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>)
+
+<span class="cm"># Grouped by sex, order bars</span>
+sns.<span class="fn">barplot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    hue<span class="op">=</span><span class="st">"sex"</span>,
+    order<span class="op">=</span>[<span class="st">"Thur"</span>, <span class="st">"Fri"</span>, <span class="st">"Sat"</span>, <span class="st">"Sun"</span>],
+    estimator<span class="op">=</span><span class="st">"median"</span>  <span class="cm"># default is "mean"</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">boxplot()</h3>
+        <p>Shows median, quartiles, and outliers. Great for comparing distributions.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre>sns.<span class="fn">boxplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"total_bill"</span>, hue<span class="op">=</span><span class="st">"smoker"</span>)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">violinplot()</h3>
+        <p>Like a box plot but shows the full distribution shape using KDE.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre>sns.<span class="fn">violinplot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"total_bill"</span>,
+    hue<span class="op">=</span><span class="st">"sex"</span>,
+    split<span class="op">=</span><span class="kw">True</span>  <span class="cm"># show each hue on different side</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">stripplot() & swarmplot()</h3>
+        <p>Show individual data points. <code class="inline">swarmplot</code> avoids overlapping by spreading points.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Strip plot (random jitter)</span>
+sns.<span class="fn">stripplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>, jitter<span class="op">=</span><span class="kw">True</span>)
+
+<span class="cm"># Swarm plot (beeswarm — no overlapping)</span>
+sns.<span class="fn">swarmplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>, hue<span class="op">=</span><span class="st">"sex"</span>)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">countplot()</h3>
+        <p>Counts the number of observations in each category:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">titanic</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"titanic"</span>)
+sns.<span class="fn">countplot</span>(data<span class="op">=</span>titanic, x<span class="op">=</span><span class="st">"class"</span>, hue<span class="op">=</span><span class="st">"survived"</span>)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Function</th><th>Shows</th><th>Use When</th></tr></thead>
+            <tbody>
+              <tr><td><code class="inline">barplot()</code></td><td>Mean + CI</td><td>Comparing averages</td></tr>
+              <tr><td><code class="inline">boxplot()</code></td><td>Median, IQR, outliers</td><td>Quick distribution comparison</td></tr>
+              <tr><td><code class="inline">violinplot()</code></td><td>Full distribution shape</td><td>Understanding distribution shape</td></tr>
+              <tr><td><code class="inline">stripplot()</code></td><td>Individual points</td><td>Small datasets (&lt; 200 rows)</td></tr>
+              <tr><td><code class="inline">swarmplot()</code></td><td>Points, no overlap</td><td>Small-medium datasets</td></tr>
+              <tr><td><code class="inline">countplot()</code></td><td>Category counts</td><td>Frequency of categories</td></tr>
+              <tr><td><code class="inline">pointplot()</code></td><td>Mean + CI with lines</td><td>Trends across categories</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ REGRESSION ═══ -->
+      <section class="section" id="s-regression">
+        <h2 class="section-title"><span class="num">9</span> Regression Plots</h2>
+        <p class="section-lead">Visualize linear (and non-linear) relationships with confidence intervals.</p>
+
+        <h3 class="sub-title">regplot()</h3>
+        <p>Scatter plot with a fitted regression line + confidence band.</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Linear regression line</span>
+sns.<span class="fn">regplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>)
+
+<span class="cm"># Polynomial regression (order=2 is quadratic)</span>
+sns.<span class="fn">regplot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    order<span class="op">=</span><span class="num">2</span>,        <span class="cm"># polynomial degree</span>
+    ci<span class="op">=</span><span class="num">95</span>,          <span class="cm"># confidence interval %</span>
+    scatter_kws<span class="op">=</span>{<span class="st">"alpha"</span>: <span class="num">0.4</span>}
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">lmplot() — faceted regression</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Regression split by groups</span>
+sns.<span class="fn">lmplot</span>(
+    data<span class="op">=</span>tips,
+    x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    hue<span class="op">=</span><span class="st">"smoker"</span>,  <span class="cm"># different line per group</span>
+    col<span class="op">=</span><span class="st">"time"</span>     <span class="cm"># separate subplots by time</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">residplot()</h3>
+        <p>Check if residuals are randomly distributed (validates linear regression assumptions):</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre>sns.<span class="fn">residplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <p><strong>regplot vs lmplot:</strong> Use <code class="inline">regplot()</code> when you want to add regression to an existing axes. Use <code class="inline">lmplot()</code> when you want faceting (separate subplots by category) — it creates its own figure.</p>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ MATRIX ═══ -->
+      <section class="section" id="s-matrix">
+        <h2 class="section-title"><span class="num">10</span> Matrix Plots</h2>
+        <p class="section-lead">Visualize 2D arrays — correlation matrices, pivot tables, and more.</p>
+
+        <h3 class="sub-title">heatmap()</h3>
+        <p>The classic visualization for correlation matrices:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Correlation heatmap</span>
+<span class="var">corr</span> <span class="op">=</span> tips.<span class="fn">select_dtypes</span>(<span class="st">"number"</span>).<span class="fn">corr</span>()
+
+sns.<span class="fn">heatmap</span>(
+    corr,
+    annot<span class="op">=</span><span class="kw">True</span>,    <span class="cm"># show numbers in cells</span>
+    fmt<span class="op">=</span><span class="st">".2f"</span>,     <span class="cm"># 2 decimal places</span>
+    cmap<span class="op">=</span><span class="st">"RdBu_r"</span>, <span class="cm"># diverging colormap</span>
+    center<span class="op">=</span><span class="num">0</span>,      <span class="cm"># center colormap at 0</span>
+    vmin<span class="op">=</span><span class="op">-</span><span class="num">1</span>, vmax<span class="op">=</span><span class="num">1</span>
+)
+plt.<span class="fn">show</span>()
+
+<span class="cm"># Pivot table heatmap (flights dataset)</span>
+<span class="var">flights</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"flights"</span>)
+<span class="var">pivot</span> <span class="op">=</span> flights.<span class="fn">pivot</span>(index<span class="op">=</span><span class="st">"month"</span>, columns<span class="op">=</span><span class="st">"year"</span>, values<span class="op">=</span><span class="st">"passengers"</span>)
+sns.<span class="fn">heatmap</span>(<span class="var">pivot</span>, annot<span class="op">=</span><span class="kw">True</span>, fmt<span class="op">=</span><span class="st">"d"</span>, cmap<span class="op">=</span><span class="st">"YlOrRd"</span>)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">clustermap()</h3>
+        <p>Hierarchically-clustered heatmap — reorders rows and columns by similarity:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">iris</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"iris"</span>)
+<span class="var">iris_num</span> <span class="op">=</span> iris.<span class="fn">drop</span>(<span class="st">"species"</span>, axis<span class="op">=</span><span class="num">1</span>)
+
+sns.<span class="fn">clustermap</span>(
+    iris_num,
+    cmap<span class="op">=</span><span class="st">"vlag"</span>,
+    standard_scale<span class="op">=</span><span class="num">1</span>  <span class="cm"># normalize each column</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ GRIDS ═══ -->
+      <section class="section" id="s-grids">
+        <h2 class="section-title"><span class="num">11</span> Multi-Plot Grids</h2>
+        <p class="section-lead">Build complex multi-panel figures with minimal code.</p>
+
+        <h3 class="sub-title">pairplot()</h3>
+        <p>Visualizes all pairwise relationships in a dataset at once:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">iris</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"iris"</span>)
+
+<span class="cm"># Basic pairplot</span>
+sns.<span class="fn">pairplot</span>(iris, hue<span class="op">=</span><span class="st">"species"</span>)
+
+<span class="cm"># Custom diagonal (KDE instead of histogram)</span>
+sns.<span class="fn">pairplot</span>(
+    iris,
+    hue<span class="op">=</span><span class="st">"species"</span>,
+    diag_kind<span class="op">=</span><span class="st">"kde"</span>,
+    plot_kws<span class="op">=</span>{<span class="st">"alpha"</span>: <span class="num">0.6</span>}
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">FacetGrid</h3>
+        <p>The most flexible way to build subplot grids. Separate any plot by rows and/or columns of categories:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># Create grid: 1 column per "time", 1 row per "sex"</span>
+<span class="var">g</span> <span class="op">=</span> sns.<span class="fn">FacetGrid</span>(tips, col<span class="op">=</span><span class="st">"time"</span>, row<span class="op">=</span><span class="st">"sex"</span>, height<span class="op">=</span><span class="num">4</span>)
+
+<span class="cm"># Map any plotting function onto it</span>
+<span class="var">g</span>.<span class="fn">map_dataframe</span>(sns.histplot, x<span class="op">=</span><span class="st">"total_bill"</span>)
+<span class="var">g</span>.<span class="fn">add_legend</span>()
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">JointGrid — joint + marginal plots</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="cm"># jointplot = one-liner shortcut</span>
+sns.<span class="fn">jointplot</span>(
+    data<span class="op">=</span>tips,
+    x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    kind<span class="op">=</span><span class="st">"reg"</span>  <span class="cm"># "scatter", "kde", "hex", "hist", "reg", "resid"</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ CUSTOMIZATION ═══ -->
+      <section class="section" id="s-customization">
+        <h2 class="section-title"><span class="num">12</span> Customization</h2>
+        <p class="section-lead">Seaborn plots are Matplotlib objects — customize anything.</p>
+
+        <h3 class="sub-title">Titles, labels & size</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">fig</span>, <span class="var">ax</span> <span class="op">=</span> plt.<span class="fn">subplots</span>(figsize<span class="op">=</span>(<span class="num">10</span>, <span class="num">6</span>))  <span class="cm"># width, height in inches</span>
+
+sns.<span class="fn">barplot</span>(data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>, ax<span class="op">=</span><span class="var">ax</span>)
+
+<span class="cm"># Customize via Matplotlib</span>
+<span class="var">ax</span>.<span class="fn">set_title</span>(<span class="st">"Average Tips by Day"</span>, fontsize<span class="op">=</span><span class="num">16</span>, fontweight<span class="op">=</span><span class="st">"bold"</span>)
+<span class="var">ax</span>.<span class="fn">set_xlabel</span>(<span class="st">"Day of Week"</span>)
+<span class="var">ax</span>.<span class="fn">set_ylabel</span>(<span class="st">"Average Tip ($)"</span>)
+<span class="var">ax</span>.<span class="fn">set_xticklabels</span>(<span class="var">ax</span>.<span class="fn">get_xticklabels</span>(), rotation<span class="op">=</span><span class="num">45</span>)
+<span class="var">ax</span>.<span class="fn">spines</span>[<span class="st">"top"</span>].<span class="fn">set_visible</span>(<span class="kw">False</span>)
+<span class="var">ax</span>.<span class="fn">spines</span>[<span class="st">"right"</span>].<span class="fn">set_visible</span>(<span class="kw">False</span>)
+plt.<span class="fn">tight_layout</span>()
+plt.<span class="fn">show</span>()</pre>
+        </div>
+
+        <h3 class="sub-title">Saving figures</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre>plt.<span class="fn">savefig</span>(
+    <span class="st">"my_plot.png"</span>,
+    dpi<span class="op">=</span><span class="num">300</span>,         <span class="cm"># high resolution for print</span>
+    bbox_inches<span class="op">=</span><span class="st">"tight"</span>,  <span class="cm"># removes extra whitespace</span>
+    transparent<span class="op">=</span><span class="kw">True</span>  <span class="cm"># transparent background</span>
+)
+
+<span class="cm"># Also supports .svg, .pdf, .jpg</span>
+plt.<span class="fn">savefig</span>(<span class="st">"chart.svg"</span>)</pre>
+        </div>
+
+        <h3 class="sub-title">Combining violin + strip plot</h3>
+        <p>Layer multiple seaborn plots on the same axes:</p>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="var">fig</span>, <span class="var">ax</span> <span class="op">=</span> plt.<span class="fn">subplots</span>(figsize<span class="op">=</span>(<span class="num">8</span>, <span class="num">5</span>))
+
+<span class="cm"># Draw violin first</span>
+sns.<span class="fn">violinplot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    inner<span class="op">=</span><span class="kw">None</span>, color<span class="op">=</span><span class="st">".8"</span>, ax<span class="op">=</span><span class="var">ax</span>
+)
+<span class="cm"># Overlay individual data points</span>
+sns.<span class="fn">stripplot</span>(
+    data<span class="op">=</span>tips, x<span class="op">=</span><span class="st">"day"</span>, y<span class="op">=</span><span class="st">"tip"</span>,
+    jitter<span class="op">=</span><span class="kw">True</span>, size<span class="op">=</span><span class="num">3</span>, alpha<span class="op">=</span><span class="num">0.5</span>, ax<span class="op">=</span><span class="var">ax</span>
+)
+plt.<span class="fn">show</span>()</pre>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ OBJECTS ═══ -->
+      <section class="section" id="s-objects">
+        <h2 class="section-title"><span class="num">13</span> Objects Interface <span style="font-size:13px; background:var(--accent2); color:#fff; padding:2px 10px; border-radius:20px; font-family:'JetBrains Mono',monospace; vertical-align:middle; margin-left:4px;">New in v0.12</span></h2>
+        <p class="section-lead">A composable, declarative system for building plots — the future of seaborn.</p>
+
+        <div class="callout info">
+          <span class="callout-icon">🆕</span>
+          <p>The objects interface was introduced in seaborn 0.12 and offers a fundamentally different, more flexible way to create plots by chaining operations together.</p>
+        </div>
+
+        <h3 class="sub-title">Basic structure</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">import</span> <span class="im">seaborn.objects</span> <span class="kw">as</span> <span class="var">so</span>
+
+(
+    so.<span class="fn">Plot</span>(tips, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>)
+    .<span class="fn">add</span>(so.<span class="fn">Dot</span>())                 <span class="cm"># scatter dots</span>
+    .<span class="fn">show</span>()
+)</pre>
+        </div>
+
+        <h3 class="sub-title">Composing marks & transforms</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">python</span>
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+          </div>
+          <pre><span class="kw">import</span> <span class="im">seaborn.objects</span> <span class="kw">as</span> <span class="var">so</span>
+
+(
+    so.<span class="fn">Plot</span>(tips, x<span class="op">=</span><span class="st">"total_bill"</span>, y<span class="op">=</span><span class="st">"tip"</span>, color<span class="op">=</span><span class="st">"smoker"</span>)
+    .<span class="fn">add</span>(so.<span class="fn">Dot</span>(alpha<span class="op">=</span><span class="num">0.5</span>))          <span class="cm"># raw points</span>
+    .<span class="fn">add</span>(so.<span class="fn">Line</span>(), so.<span class="fn">PolyFit</span>())    <span class="cm"># regression line</span>
+    .<span class="fn">label</span>(title<span class="op">=</span><span class="st">"Tips with Fit"</span>)
+    .<span class="fn">show</span>()
+)</pre>
+        </div>
+
+        <h3 class="sub-title">Available Marks</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Mark</th><th>What it draws</th></tr></thead>
+            <tbody>
+              <tr><td><code class="inline">so.Dot()</code></td><td>Scatter points</td></tr>
+              <tr><td><code class="inline">so.Line()</code></td><td>Connected line</td></tr>
+              <tr><td><code class="inline">so.Bar()</code></td><td>Bars</td></tr>
+              <tr><td><code class="inline">so.Area()</code></td><td>Filled area</td></tr>
+              <tr><td><code class="inline">so.Path()</code></td><td>Custom path marks</td></tr>
+              <tr><td><code class="inline">so.Text()</code></td><td>Text annotations</td></tr>
+              <tr><td><code class="inline">so.Range()</code></td><td>Error bars / ranges</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ CHEATSHEET ═══ -->
+      <section class="section" id="s-cheatsheet">
+        <h2 class="section-title"><span class="num">📋</span> Cheat Sheet</h2>
+        <p class="section-lead">Quick reference for the most commonly used seaborn functions.</p>
+
+        <div class="cheat-grid">
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#4f9cf9"></span> Setup</div>
+            <pre><span class="kw">import</span> <span class="im">seaborn</span> <span class="kw">as</span> <span class="var">sns</span>
+<span class="kw">import</span> <span class="im">matplotlib.pyplot</span> <span class="kw">as</span> <span class="var">plt</span>
+sns.<span class="fn">set_theme</span>(style<span class="op">=</span><span class="st">"darkgrid"</span>)
+<span class="var">df</span> <span class="op">=</span> sns.<span class="fn">load_dataset</span>(<span class="st">"tips"</span>)</pre>
+          </div>
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#a78bfa"></span> Relational</div>
+            <pre>sns.<span class="fn">scatterplot</span>(data, x, y, hue)
+sns.<span class="fn">lineplot</span>(data, x, y, hue)
+sns.<span class="fn">relplot</span>(data, x, y, kind, col)</pre>
+          </div>
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#34d399"></span> Distribution</div>
+            <pre>sns.<span class="fn">histplot</span>(data, x, kde, hue)
+sns.<span class="fn">kdeplot</span>(data, x, fill)
+sns.<span class="fn">ecdfplot</span>(data, x)
+sns.<span class="fn">displot</span>(data, x, kind, col)</pre>
+          </div>
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#fb923c"></span> Categorical</div>
+            <pre>sns.<span class="fn">barplot</span>(data, x, y, hue)
+sns.<span class="fn">boxplot</span>(data, x, y, hue)
+sns.<span class="fn">violinplot</span>(data, x, y)
+sns.<span class="fn">stripplot</span>(data, x, y)
+sns.<span class="fn">countplot</span>(data, x)</pre>
+          </div>
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#f472b6"></span> Regression</div>
+            <pre>sns.<span class="fn">regplot</span>(data, x, y, order)
+sns.<span class="fn">lmplot</span>(data, x, y, hue, col)
+sns.<span class="fn">residplot</span>(data, x, y)</pre>
+          </div>
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#60a5fa"></span> Matrix</div>
+            <pre>sns.<span class="fn">heatmap</span>(matrix, annot, cmap)
+sns.<span class="fn">clustermap</span>(matrix, cmap)</pre>
+          </div>
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#34d399"></span> Grids</div>
+            <pre>sns.<span class="fn">pairplot</span>(df, hue, diag_kind)
+sns.<span class="fn">jointplot</span>(data, x, y, kind)
+sns.<span class="fn">FacetGrid</span>(data, col, row)</pre>
+          </div>
+          <div class="cheat-card">
+            <div class="cheat-card-head"><span class="dot2" style="background:#fbbf24"></span> Aesthetics</div>
+            <pre>sns.<span class="fn">set_theme</span>(style, palette)
+sns.<span class="fn">set_context</span>(<span class="st">"talk"</span>)
+sns.<span class="fn">set_palette</span>(<span class="st">"Set2"</span>)
+plt.<span class="fn">savefig</span>(<span class="st">"out.png"</span>, dpi=300)</pre>
+          </div>
+        </div>
+
+        <h3 class="sub-title">Key Parameters (most plots)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Parameter</th><th>Type</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td><code class="inline">hue</code></td><td>column name</td><td>Splits by color</td></tr>
+              <tr><td><code class="inline">size</code></td><td>column name</td><td>Varies marker size</td></tr>
+              <tr><td><code class="inline">style</code></td><td>column name</td><td>Varies marker shape/linestyle</td></tr>
+              <tr><td><code class="inline">palette</code></td><td>string / list</td><td>Color palette</td></tr>
+              <tr><td><code class="inline">alpha</code></td><td>0.0–1.0</td><td>Transparency</td></tr>
+              <tr><td><code class="inline">order</code></td><td>list</td><td>Category order on axis</td></tr>
+              <tr><td><code class="inline">col</code> / <code class="inline">row</code></td><td>column name</td><td>Create subplot grid</td></tr>
+              <tr><td><code class="inline">ax</code></td><td>plt.Axes</td><td>Draw on specific axes</td></tr>
+              <tr><td><code class="inline">ci</code></td><td>int / "sd" / None</td><td>Confidence interval %</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════ QUIZ ═══ -->
+      <section class="section" id="s-quiz">
+        <h2 class="section-title"><span class="num">🎯</span> Practice Quiz</h2>
+        <p class="section-lead">Test your seaborn knowledge!</p>
+
+        <div class="quiz-card" id="q1">
+          <div class="quiz-q">1. Which function would you use to visualize the distribution of a single numeric column with a smooth curve?</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this,'q1',false)">sns.barplot()</button>
+            <button class="quiz-opt" onclick="answer(this,'q1',true)">sns.kdeplot()</button>
+            <button class="quiz-opt" onclick="answer(this,'q1',false)">sns.regplot()</button>
+            <button class="quiz-opt" onclick="answer(this,'q1',false)">sns.heatmap()</button>
+          </div>
+          <div class="quiz-feedback" id="q1-fb"></div>
+        </div>
+
+        <div class="quiz-card" id="q2">
+          <div class="quiz-q">2. You want to add color grouping to a scatter plot. Which parameter do you use?</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this,'q2',false)">color=</button>
+            <button class="quiz-opt" onclick="answer(this,'q2',true)">hue=</button>
+            <button class="quiz-opt" onclick="answer(this,'q2',false)">group=</button>
+            <button class="quiz-opt" onclick="answer(this,'q2',false)">split=</button>
+          </div>
+          <div class="quiz-feedback" id="q2-fb"></div>
+        </div>
+
+        <div class="quiz-card" id="q3">
+          <div class="quiz-q">3. What does sns.pairplot() do?</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this,'q3',false)">Plots two variables against each other</button>
+            <button class="quiz-opt" onclick="answer(this,'q3',false)">Creates a correlation heatmap</button>
+            <button class="quiz-opt" onclick="answer(this,'q3',true)">Creates a grid showing all pairwise relationships in a dataset</button>
+            <button class="quiz-opt" onclick="answer(this,'q3',false)">Pairs a regression line with a scatter plot</button>
+          </div>
+          <div class="quiz-feedback" id="q3-fb"></div>
+        </div>
+
+        <div class="quiz-card" id="q4">
+          <div class="quiz-q">4. Which seaborn function would you use to visualize a correlation matrix?</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this,'q4',false)">sns.matrixplot()</button>
+            <button class="quiz-opt" onclick="answer(this,'q4',false)">sns.corrplot()</button>
+            <button class="quiz-opt" onclick="answer(this,'q4',true)">sns.heatmap()</button>
+            <button class="quiz-opt" onclick="answer(this,'q4',false)">sns.pairplot()</button>
+          </div>
+          <div class="quiz-feedback" id="q4-fb"></div>
+        </div>
+
+        <div class="quiz-card" id="q5">
+          <div class="quiz-q">5. To set the global theme for all plots in a script, you call:</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this,'q5',false)">sns.style("darkgrid")</button>
+            <button class="quiz-opt" onclick="answer(this,'q5',true)">sns.set_theme(style="darkgrid")</button>
+            <button class="quiz-opt" onclick="answer(this,'q5',false)">sns.apply_theme("darkgrid")</button>
+            <button class="quiz-opt" onclick="answer(this,'q5',false)">plt.style.use("seaborn")</button>
+          </div>
+          <div class="quiz-feedback" id="q5-fb"></div>
+        </div>
+
+        <div id="quiz-score" style="display:none; margin-top:24px; padding:20px; background:var(--surface); border:1px solid var(--border); border-radius:12px; text-align:center;">
+          <div style="font-family:'Syne',sans-serif; font-size:24px; font-weight:800; margin-bottom:8px;" id="score-text"></div>
+          <div style="color:var(--muted); font-size:14px;">Quiz complete! Review any missed questions above.</div>
+          <button onclick="resetQuiz()" style="margin-top:14px; background:var(--accent); border:none; color:#fff; padding:8px 24px; border-radius:8px; font-size:13px; cursor:pointer; font-family:inherit;">Try Again</button>
+        </div>
+      </section>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<script>
+// ── NAVIGATION ──
+const sectionMeta = {
+  intro: 'Introduction',
+  install: 'Installation',
+  quickstart: 'Quick Start',
+  datasets: 'Built-in Datasets',
+  themes: 'Themes & Styles',
+  palettes: 'Color Palettes',
+  relational: 'Relational Plots',
+  distribution: 'Distribution Plots',
+  categorical: 'Categorical Plots',
+  regression: 'Regression Plots',
+  matrix: 'Matrix Plots',
+  grids: 'Multi-Plot Grids',
+  customization: 'Customization',
+  objects: 'Objects Interface',
+  cheatsheet: 'Cheat Sheet',
+  quiz: 'Practice Quiz'
+};
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  const links = document.querySelectorAll('.nav-link');
+  links.forEach(l => {
+    if (l.getAttribute('onclick') && l.getAttribute('onclick').includes("'" + id + "'")) {
+      l.classList.add('active');
+    }
+  });
+  document.getElementById('breadcrumb').innerHTML = 'Docs <span>/</span> <span>' + sectionMeta[id] + '</span>';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // close sidebar on mobile
+  if (window.innerWidth <= 768) toggleSidebar(true);
+}
+
+// ── SIDEBAR TOGGLE ──
+function toggleSidebar(forceClose) {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  if (forceClose || sb.classList.contains('open')) {
+    sb.classList.remove('open');
+    ov.classList.remove('show');
+  } else {
+    sb.classList.add('open');
+    ov.classList.add('show');
+  }
+}
+
+// ── COPY CODE ──
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// ── SEARCH / FILTER NAV ──
+function filterNav(q) {
+  const links = document.querySelectorAll('.nav-link');
+  const sections = document.querySelectorAll('.nav-section');
+  q = q.toLowerCase();
+  links.forEach(l => {
+    const txt = l.textContent.toLowerCase();
+    l.style.display = !q || txt.includes(q) ? '' : 'none';
+  });
+}
+
+// ── QUIZ ──
+let answers = {};
+const correct = { q1: true, q2: true, q3: true, q4: true, q5: true };
+const explanations = {
+  q1: "✅ Correct! kdeplot() draws a smooth kernel density estimate — perfect for single numeric distributions.",
+  q2: "✅ Correct! hue= is seaborn's way to split data by color.",
+  q3: "✅ Correct! pairplot() creates an N×N grid showing every variable against every other variable.",
+  q4: "✅ Correct! heatmap() visualizes 2D arrays — including correlation matrices.",
+  q5: "✅ Correct! sns.set_theme() is the modern way to set a global theme."
+};
+const wrongs = {
+  q1: "❌ kdeplot() is the answer. It draws a smooth probability density curve.",
+  q2: "❌ The correct parameter is hue=. It maps a column to color.",
+  q3: "❌ pairplot() generates a full grid of all pairwise relationships — scatter on off-diagonal, distribution on diagonal.",
+  q4: "❌ heatmap() is the correct answer. You typically first compute .corr() then pass it to heatmap().",
+  q5: "❌ The correct call is sns.set_theme(style='darkgrid'). Note: plt.style.use() works but isn't seaborn's way."
+};
+
+function answer(btn, qid, isCorrect) {
+  if (answers[qid] !== undefined) return; // already answered
+  answers[qid] = isCorrect;
+  const opts = btn.closest('.quiz-options').querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.disabled = true);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) {
+    opts.forEach(o => {
+      if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+    });
+  }
+  const fb = document.getElementById(qid + '-fb');
+  fb.textContent = isCorrect ? explanations[qid] : wrongs[qid];
+  fb.style.color = isCorrect ? 'var(--accent3)' : '#f87171';
+  fb.classList.add('show');
+  if (Object.keys(answers).length === 5) showScore();
+}
+
+function showScore() {
+  const score = Object.values(answers).filter(Boolean).length;
+  const el = document.getElementById('quiz-score');
+  el.style.display = 'block';
+  const t = document.getElementById('score-text');
+  if (score === 5) { t.textContent = '🎉 Perfect score: 5/5!'; t.style.color = 'var(--accent3)'; }
+  else if (score >= 3) { t.textContent = `Good job: ${score}/5`; t.style.color = 'var(--accent)'; }
+  else { t.textContent = `Keep practicing: ${score}/5`; t.style.color = '#fb923c'; }
+}
+
+function resetQuiz() {
+  answers = {};
+  ['q1','q2','q3','q4','q5'].forEach(qid => {
+    const card = document.getElementById(qid);
+    card.querySelectorAll('.quiz-opt').forEach(o => {
+      o.disabled = false;
+      o.classList.remove('correct','wrong');
+    });
+    const fb = document.getElementById(qid + '-fb');
+    fb.classList.remove('show');
+    fb.textContent = '';
+  });
+  document.getElementById('quiz-score').style.display = 'none';
+}
+
+// ── KEYBOARD NAV ──
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Escape') { e.target.value = ''; filterNav(''); }
+});
+</script>
+</body>
+</html>
